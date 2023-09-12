@@ -18,7 +18,6 @@ class UserSerialazers(serializers.ModelSerializer):
         fields = ("login", "email", "user_id", "role")
 
 
-
 class UserPostSerialiser():
 
     role = RoleSerializer()

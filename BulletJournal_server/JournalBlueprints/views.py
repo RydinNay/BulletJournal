@@ -48,3 +48,20 @@ class BluePrints(APIView):
             ser.save()
             return Response(status=200)
         return Response(status=400)
+'''
+    def delete(self, request):
+        id = request.GET.get("blueprint_id")
+
+        try:
+            obj = Blueprint.object.filter(blueprints_id = id)
+        except:
+
+            return Response(status=404)
+
+        try:
+            obj.destroy
+            return Response(status=200)
+        except:
+            return Response(status=400)
+
+'''

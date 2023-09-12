@@ -1,6 +1,7 @@
 # Create your models here.
 from django.db import models
 
+
 class Role(models.Model):
     role_id = models.BigAutoField("Role id", db_column='BID', primary_key=True)
     role_name = models.CharField("Role Name", max_length=20)
@@ -8,6 +9,7 @@ class Role(models.Model):
 
     def __str__(self):
         return f"{self.role_id, self.role_name, self.description}"
+
 
 class User(models.Model):
     login = models.CharField("Login", max_length=20)
