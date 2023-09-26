@@ -1,6 +1,6 @@
 from django.urls import path, include
-from JournalBlueprints.views import *
+from JournalBlueprints.views import Blueprints
 
 urlpatterns = [
-    path('blueprints/', BluePrints.as_view()),
+    path('blueprints/', Blueprints.as_view()),
 ]

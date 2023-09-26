@@ -1,37 +1,62 @@
-from rest_framework.views import APIView
+from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import permissions
+from rest_framework.pagination import PageNumberPagination
+from django_filters import rest_framework as filters
 
 from JournalBlueprints.models import Blueprint
 from JournalBlueprints.serialiser import BlueprintSerialazers
 
+class BulletBlueprintFilter(filters.FilterSet):
+    name = filters.CharFilter(lookup_expr='iexact')
+    max_count_of_markers = filters.NumberFilter()
 
-class BluePrints(APIView):
+    class Meta:
+        models = Blueprint
+        fields = ('name', 'creator', 'max_count_of_markers',)
 
-    def get(self, request):
+class Pagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = "page_size"
+    max_page_size = 100
 
-        creator = request.GET.get("creator")
 
-        try:
-            blueprint = Blueprint.objects.filter(creator = creator)
-            serializer = BlueprintSerialazers(blueprint, many=True)
-            return Response(serializer.data, status=200)
+class Blueprints(generics.ListAPIView):
+    queryset = Blueprint.objects.all()
+    serializer_class = BlueprintSerialazers
+    pagination_class = Pagination
 
-        except:
-            '''if creator == all'''
-            blueprint = Blueprint.objects.all()
-            serializer = BlueprintSerialazers(blueprint, many=True)
-            return Response(serializer.data, status=201)
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = BulletBlueprintFilter
+    #filterset_fields = ('name', 'creator', 'max_count_of_markers',)
+
+    '''def get_queryset(self):
+        blueprint = Blueprint.objects.all()
+        requests = self.request.query_params
+        print(requests.get())
+        blueprint.filter(requests)
+
+        return blueprint'''
+
+    '''def get(self, request):
+        filters_query = BulletBlueprintFilters(request.GET, queryset=Blueprint.objects.all())
+        context = {
+            'form': filters_query.form,
+            'blueprints': filters_query.qs
+        }
+        print(context)
+        return Response(status=200)
+
 
 
     def post(self, request):
-        '''user = request.data.get("user")'''
+        #user = request.data.get("user")
         user_serializer = BlueprintSerialazers(data = request.data(), many=True)
         if user_serializer.is_valid():
             user_serializer.save()
-            return Response({"status": "200 User registrate"})
+            return Response(request, status= 200 + "User registrate")
         else:
-            return Response({"status": "Invalid data"})
+            return Response(status = 400 + "Invalid data")
 
 
     def put(self, request):
@@ -48,7 +73,7 @@ class BluePrints(APIView):
             ser.save()
             return Response(status=200)
         return Response(status=400)
-'''
+
     def delete(self, request):
         id = request.GET.get("blueprint_id")
 
